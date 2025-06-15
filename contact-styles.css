@@ -1,0 +1,40 @@
+/* Contact Row Styles */
+.contact-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin: 0 auto;
+    max-width: 900px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+}
+
+.contact-item i {
+    font-size: 1.8rem;
+    color: var(--color-gold);
+    margin-right: 15px;
+}
+
+.contact-item a {
+    font-size: 1.1rem;
+    color: var(--color-dark);
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.contact-item a:hover {
+    color: var(--color-gold);
+}
+
+@media (max-width: 767px) {
+    .contact-row {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
