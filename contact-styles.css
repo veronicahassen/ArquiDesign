@@ -31,10 +31,17 @@
 .contact-item a:hover {
     color: var(--color-gold);
 }
+.contact-item a:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+}
 
 @media (max-width: 767px) {
     .contact-row {
         flex-direction: column;
         gap: 20px;
     }
-}
+}    .contact-row {
+        flex-direction: column;
+        gap: 20px;
+    }
