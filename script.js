@@ -95,61 +95,145 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Property gallery functionality
-    const propertyThumbs = document.querySelectorAll('.gallery-thumbs .thumb');
-    const mainPropertyImg = document.getElementById('main-property-img');
-    
-    // Function to navigate to a specific image
-    function navigateToImage(index) {
-        const thumbs = document.querySelectorAll('.gallery-thumbs .thumb');
-        if (index >= 0 && index < thumbs.length) {
-            // Remove active class from all thumbs
-            thumbs.forEach(t => t.classList.remove('active'));
-            
-            // Add active class to selected thumb
-            thumbs[index].classList.add('active');
-            
-            // Update main image
-            const imgSrc = thumbs[index].getAttribute('data-img');
-            mainPropertyImg.src = imgSrc;
-        }
-    }
-    
-    // Function to get current active image index
-    function getCurrentImageIndex() {
-        const thumbs = document.querySelectorAll('.gallery-thumbs .thumb');
-        for (let i = 0; i < thumbs.length; i++) {
-            if (thumbs[i].classList.contains('active')) {
-                return i;
+    // Gallery functionality (for both property and project galleries)
+    function setupGallery(gallerySelector, mainImgId) {
+        const thumbs = document.querySelectorAll(`${gallerySelector} .thumb`);
+        const mainImg = document.getElementById(mainImgId);
+        
+        if (!thumbs.length || !mainImg) return;
+        
+        // Function to navigate to a specific image
+        function navigateToImage(index) {
+            if (index >= 0 && index < thumbs.length) {
+                // Remove active class from all thumbs
+                thumbs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to selected thumb
+                thumbs[index].classList.add('active');
+                
+                // Update main image
+                const imgSrc = thumbs[index].getAttribute('data-img');
+                mainImg.src = imgSrc;
             }
         }
-        return 0;
+        
+        // Function to get current active image index
+        function getCurrentImageIndex() {
+            for (let i = 0; i < thumbs.length; i++) {
+                if (thumbs[i].classList.contains('active')) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+        
+        // Add click event for thumbnails
+        thumbs.forEach((thumb, index) => {
+            thumb.addEventListener('click', function() {
+                navigateToImage(index);
+            });
+        });
+        
+        // Add swipe functionality for the gallery
+        const galleryMain = document.querySelector(`${gallerySelector} .gallery-main`);
+        const galleryPrev = document.querySelector(`${gallerySelector} .gallery-prev`);
+        const galleryNext = document.querySelector(`${gallerySelector} .gallery-next`);
+        
+        if (galleryPrev) {
+            galleryPrev.addEventListener('click', function() {
+                const currentIndex = getCurrentImageIndex();
+                navigateToImage(currentIndex - 1);
+            });
+        }
+        
+        if (galleryNext) {
+            galleryNext.addEventListener('click', function() {
+                const currentIndex = getCurrentImageIndex();
+                navigateToImage(currentIndex + 1);
+            });
+        }
+        
+        if (galleryMain) {
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            galleryMain.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, false);
+            
+            galleryMain.addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, false);
+            
+            // For desktop mouse drag
+            let isDragging = false;
+            let startX = 0;
+            
+            galleryMain.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                startX = e.pageX;
+                e.preventDefault();
+            });
+            
+            galleryMain.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+            });
+            
+            galleryMain.addEventListener('mouseup', function(e) {
+                if (!isDragging) return;
+                
+                const endX = e.pageX;
+                const diffX = endX - startX;
+                
+                if (Math.abs(diffX) > 50) {
+                    if (diffX > 0) {
+                        // Swiped right - go to previous
+                        const currentIndex = getCurrentImageIndex();
+                        navigateToImage(currentIndex - 1);
+                    } else {
+                        // Swiped left - go to next
+                        const currentIndex = getCurrentImageIndex();
+                        navigateToImage(currentIndex + 1);
+                    }
+                }
+                
+                isDragging = false;
+            });
+            
+            galleryMain.addEventListener('mouseleave', function() {
+                isDragging = false;
+            });
+            
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diffX = touchEndX - touchStartX;
+                
+                if (Math.abs(diffX) > swipeThreshold) {
+                    if (diffX > 0) {
+                        // Swiped right - go to previous
+                        const currentIndex = getCurrentImageIndex();
+                        navigateToImage(currentIndex - 1);
+                    } else {
+                        // Swiped left - go to next
+                        const currentIndex = getCurrentImageIndex();
+                        navigateToImage(currentIndex + 1);
+                    }
+                }
+            }
+        }
+        
+        return { navigateToImage, getCurrentImageIndex };
     }
     
-    // Add click event for thumbnails
-    propertyThumbs.forEach((thumb, index) => {
-        thumb.addEventListener('click', function() {
-            navigateToImage(index);
-        });
-    });
+    // Setup property gallery
+    setupGallery('.property-gallery', 'main-property-img');
     
-    // Add click events for navigation controls
-    const galleryPrev = document.querySelector('.gallery-prev');
-    const galleryNext = document.querySelector('.gallery-next');
+    // Setup project gallery
+    setupGallery('.project-gallery', 'main-project-img');
     
-    if (galleryPrev) {
-        galleryPrev.addEventListener('click', function() {
-            const currentIndex = getCurrentImageIndex();
-            navigateToImage(currentIndex - 1);
-        });
-    }
-    
-    if (galleryNext) {
-        galleryNext.addEventListener('click', function() {
-            const currentIndex = getCurrentImageIndex();
-            navigateToImage(currentIndex + 1);
-        });
-    }
+    // The duplicate navigation code has been removed as it's now handled by the setupGallery function
     
     // Projects carousel functionality - simplified since we only have one project
     const carouselSlides = document.querySelectorAll('.carousel-slide');
