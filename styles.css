@@ -260,6 +260,13 @@ nav ul li a:hover::after {
     z-index: 1;
     padding: 40px;
     max-width: 800px;
+    text-align: center;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 #hero .overlay {
@@ -274,12 +281,14 @@ nav ul li a:hover::after {
 
 
 #hero h2 {
-    font-size: 3.5rem;
+    font-size: 2.8rem;
     margin-bottom: 1rem;
     text-transform: uppercase;
-    white-space: nowrap;
     width: 100%;
     text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    white-space: nowrap;
 }
 
 #hero p {
@@ -978,7 +987,7 @@ footer {
     }
     
     #hero h2 {
-        font-size: 3rem;
+        font-size: 2.5rem;
     }
 }
 
